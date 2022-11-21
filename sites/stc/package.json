@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@vercel/analytics": "^0.1.5",
     "next": "12.3.2-canary.22",
     "nextra": "2.0.0-alpha.56",
     "nextra-theme-docs": "2.0.0-alpha.59",
