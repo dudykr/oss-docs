@@ -1,0 +1,141 @@
+---
+title: 'This week in stc, 2'
+date: 2022/11/20
+description: 'The second status update for stc'
+author: kdy1
+---
+
+This is the second status update for [stc][], the new TypeScript type checker written in Rust.
+
+## TL;DR;
+
+Stats:
+
+```
+{
+    required_error: 4463 => 4350,
+    matched_error: 5421 => 5534,
+    extra_error: 999 => 1051,
+    panic: 89 => 77,
+}
+```
+
+This is the diff for [the last commit on November, 13](https://github.com/dudykr/stc/blob/b451a2921766755bf94199f38489addd1d692897/crates/stc_ts_type_checker/tests/tsc-stats.rust-debug) and [the last commit on November, 20](https://github.com/dudykr/stc/blob/c897b03cf317a385d5ff0d90a3cd52f399af0a3f/crates/stc_ts_type_checker/tests/tsc-stats.rust-debug)
+
+`extra_error` means a false positive. In other words, it's the number of incorrect errors `stc` emits while it should not.
+Reducing it is the primary focus, but it was increased because I fixed lots of panics.
+If the analyzer panics while analyzing a test case, the stat becomes
+
+```rust
+Stats {
+    required_error: required_error,
+    matched_error: 0,
+    extra_error: 0,
+    panic: 1
+}
+```
+
+When the panic is fixed, the analyzer may emit errors, and some of them are wrong.
+
+## Contributions
+
+![Contributors](/images/this-week-in-stc/2/contributors.png)
+
+
+There were some contributors this week.
+
+## Noticeable changes
+
+- [#315](https://github.com/dudykr/stc/pull/315): Groundwork for RAII-based context for errors.
+
+Debugging [stc][] is a very difficult task.
+To help debugging, [stc][] emits some context information for each errors.
+
+It looks like the below.
+
+```
+  x context:
+  | lhs = number;
+  | rhs = true;
+  | context: `fail!()` called from assign/mod.rs:1840
+  | LHS (final): number;
+  | RHS (final): true;
+  | WrongArgType {
+  |     span: Span {
+  |         lo: BytePos(
+  |             941,
+  |         ),
+  |         hi: BytePos(
+  |             945,
+  |         ),
+  |         ctxt: #0,
+  |     },
+  |     inner: AssignFailed {
+  |         span: Span {
+  |             lo: BytePos(
+  |                 941,
+  |             ),
+  |             hi: BytePos(
+  |                 945,
+  |             ),
+  |             ctxt: #0,
+  |         },
+  |         cause: [],
+  |     },
+  | }
+    ,-[$DIR/tests/conformance/types/union/unionTypeConstructSignatures.ts:15:1]
+ 15 | new unionOfDifferentReturnType1(true); // error in type of parameter
+    :                                 ^^^^
+    `----
+```
+
+Previously, these contexts are added by calling `.context` method on the `Result` or the `Error` type, like
+
+```rust
+return Err(ErrorKind::AssignFailed {
+    span,
+    left: box to.clone(),
+    right: box rhs.clone(),
+    right_ident: opts.right_ident_span,
+    cause: vec![],
+}
+.context({
+    format!(
+        "`fail!()` called from assign/mod.rs:{}\nLHS (final): {}\nRHS (final): {}",
+        line!(),
+        dump_type_as_string(&self.cm, to),
+        dump_type_as_string(&self.cm, rhs)
+    )
+}))
+```
+
+But this is problematic because it does not attach additional context if I simply add `?` operator to an expression.
+
+I found a better solution.
+Once migration is done, it will look like
+
+```rust
+let _ctx = ctx!(format!("convert_type_to_type_lit: {:?}", ty));
+
+let ty = self.normalize(Some(span), ty, NormalizeTypeOpts { ..Default::default() })?;
+
+call_other()?;
+```
+
+instead of
+
+```rust
+let ty = self.normalize(Some(span), ty, NormalizeTypeOpts { ..Default::default() })
+    .with_context(|| format!("convert_type_to_type_lit: {:?}", ty));
+
+call_other().with_context(|| format!("convert_type_to_type_lit: {:?}", ty))?;
+```
+
+which is too verbose.
+
+Additionally, this allows tracking errors directly reported.
+In previous version there were no concept of stack.
+So there was no way to add full context to errors generated from the current code path.
+The new version will allow faster debugging.
+
+[stc]: https://github.com/dudykr/stc

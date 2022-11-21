@@ -1,0 +1,72 @@
+---
+title: 'This week in stc, 1'
+date: 2022/11/13
+description: 'The first status update for stc'
+author: kdy1
+---
+
+I'm going to provide a weekly update for the status of [stc][].
+This is the first post.
+
+---
+
+## TL;DR;
+
+Stats:
+
+```
+{
+    required_error: 5155 => 4463,
+    matched_error: 4711 => 5421,
+    extra_error: 1983 => 999,
+    panic: 103 => 89,
+}
+```
+
+This is the diff for [the last commit on November, 6](https://github.com/dudykr/stc/blob/c1e5e0949368f26d2453ed7420aea35edc405507/crates/stc_ts_type_checker/tests/tsc-stats.rust-debug) and [the last commit on November, 13](https://github.com/dudykr/stc/blob/b451a2921766755bf94199f38489addd1d692897/crates/stc_ts_type_checker/tests/tsc-stats.rust-debug)
+
+## Contributions
+
+Many people contributed to stc, either by contributing developer time or financially.
+
+![Contributors](/images/this-week-in-stc/1/contributors.png)
+
+This is a screenshot for 1 month because this is the first update.
+
+## Noticeable changes
+
+- [#284](https://github.com/dudykr/stc/pull/284): Make `fix()` shallow.
+
+This improve performance by margin.
+`Type` of `stc` has some invariants to make it easier to handle.
+One example of the invariants is that a union cannot include a union as an element, because it causes lots of troubles with the pattern matching of Rust.
+There's a function named `fix`, which ensures that a type satisfies all of the invariants.
+But previously, it was recursive and it was a costly operation.
+It's now shallow and it does not recurse into `Union` nor `Intersection`.
+Performance gain is noticeable.
+The test execution with a x**debug build** previously took 1m 45s, but it now takes 1m 20s.
+
+- [#275](https://github.com/dudykr/stc/pull/275): Determine project structure for LSP.
+
+My plan is to provide a LSP for TypeScript after fixing all type inference bugs.
+I want to make it testable, so I tried various structures.
+While triage, I found a project structure which is testable.
+I decided to use the `examples` directory of cargo to create a LSP binary which can be used for testing.
+Basically, this structure allows **using exactly same code** for testing environment and the release build of stc LSP.
+
+Special thanks to Deno because I referred to the structure of Deno lsp a lot.
+
+- [#245](https://github.com/dudykr/stc/pull/245): Update swc.
+
+This is one of the tasks I wanted to do, but postponed due to the time.
+Divy helped a lot, and I managed to update swc crates.
+This introduced some regressions, but those are all fixed at the moment.
+
+- [#227](https://github.com/dudykr/stc/pull/227): Fix stack overflow of module loader.
+
+This patch fixes the issue which blocked people from trying stc on their own project.
+`stc` could verify a huge TypeScript module if it does not have an import, but this patch reduces the restrictions for real-world project further.
+
+---
+
+[stc]: https://github.com/dudykr/stc
