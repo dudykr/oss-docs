@@ -1,0 +1,7 @@
+.next
+.yarn/
+node_modules
+.DS_Store
+.env
+# custom binaries
+.bin
