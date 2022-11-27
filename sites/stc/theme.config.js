@@ -1,7 +1,7 @@
 /* eslint-disable import/no-anonymous-default-export */
 export default {
-  projectLink: "https://github.com/dudykr/stc-public",
-  docsRepositoryBase: "https://github.com/dudykr/stc-public/blob/main",
+  projectLink: "https://github.com/dudykr/oss-docs",
+  docsRepositoryBase: "https://github.com/dudykr/oss-docs/blob/main",
   titleSuffix: " - STC",
   nextLinks: true,
   prevLinks: true,
