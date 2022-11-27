@@ -3,3 +3,25 @@ title: "STC: Speedy type checker"
 ---
 
 The faster TypeScript type checker written in Rust.
+
+
+## Reading stats in status updates
+
+You will see `Stats` in status updates, like
+
+```rust
+{
+    required_error: 4463,
+    matched_error: 5421,
+    extra_error: 999,
+    panic: 89,
+}
+```
+
+ - `required_error` means a true negative, which is a type error that is not reported by `stc`.
+
+ - `matched_error` means a true positive, which is a type error that is reported by `stc` and correct.
+
+ - `extra_error` means a false positive. In other words, it's the number of incorrect errors `stc` emits while it should not.
+
+ - `panic` means the analyzer panicked while validating input files, due to a logic bug.
