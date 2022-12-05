@@ -10,9 +10,9 @@
   },
   "dependencies": {
     "@vercel/analytics": "^0.1.5",
-    "next": "12.3.2-canary.22",
-    "nextra": "2.0.0-alpha.56",
-    "nextra-theme-docs": "2.0.0-alpha.59",
+    "next": "13.0.6",
+    "nextra": "2.0.1",
+    "nextra-theme-docs": "2.0.1",
     "react": "^18.0.0",
     "react-dom": "^18.0.0"
   },
