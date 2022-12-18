@@ -1,0 +1,36 @@
+---
+title: 'This week in stc, 6'
+date: 2022/12/18
+description: 'The status update for stc'
+author: kdy1
+---
+
+This is the status update for [stc][], the new TypeScript type checker written in Rust.
+
+## TL;DR;
+
+Stats:
+
+```
+Stats {
+    required_error: 4294 => 4270,
+    matched_error: 5590 => 5614,
+    extra_error: 817 => 761,
+    panic: 74,
+}
+```
+
+This is the diff for [the commit used for previous status update](https://github.com/dudykr/stc/blob/23dd114529f10c5d645887c055cd396d1bfe7b11/crates/stc_ts_type_checker/tests/tsc-stats.rust-debug) and [the last commit on December, 11](https://github.com/dudykr/stc/blob/d6dc481fd29c9e6e93e268dbd4f11a7b3883a6d2/crates/stc_ts_type_checker/tests/tsc-stats.rust-debug)
+
+## Contributions
+
+![Contributors](/images/this-week-in-stc/6/contributors.png)
+
+There were lots of contributors this week.
+Thank you!
+
+## Noticeable change
+
+There were no noticable change, but I'm working on [#414: Ignore wrong test refs](https://github.com/dudykr/stc/pull/414), which makes the testing system stricter. I expect a productivity boost from it.
+
+[stc]: https://github.com/dudykr/stc
