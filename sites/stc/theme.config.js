@@ -77,7 +77,7 @@ export default {
   docsRepositoryBase: "https://github.com/dudykr/oss-docs/blob/main",
   useNextSeoProps() {
     return {
-      titleTemplate: "%s – SWC",
+      titleTemplate: "%s – stc",
     };
   },
   toc: {
