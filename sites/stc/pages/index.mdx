@@ -15,8 +15,8 @@ export const getStaticProps = ({ params }) => {
           content: repo.content
         }
       },
-      // The page will be considered as stale and regenerated every 6 hours.
-      revalidate: 60 * 60 * 6
+      // The page will be considered as stale and regenerated every 1 hour.
+      revalidate: 60 * 60
     }))
 }
  
