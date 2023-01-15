@@ -2,21 +2,39 @@
 title: "STC: Speedy type checker"
 ---
 
-The faster TypeScript type checker written in Rust.
+import { useSSG } from 'nextra/ssg'
 
-
-## Reading stats in status updates
-
-You will see `Stats` in status updates, like
-
-```rust
-{
-    required_error: 4463,
-    matched_error: 5421,
-    extra_error: 999,
-    panic: 89,
+export const getStaticProps = ({ params }) => {
+  return fetch(`https://api.github.com/repos/dudykr/stc/contents/crates/stc_ts_type_checker/tests/tsc-stats.rust-debug`)
+    .then(res => res.json())
+    .then(repo => ({
+      props: {
+        // We add an `ssg` field to the page props,
+        // which will be provided to the Nextra `useSSG` hook.
+        ssg: {
+          content: repo.content
+        }
+      },
+      // The page will be considered as stale and regenerated every 6 hours.
+      revalidate: 60 * 60 * 6
+    }))
 }
-```
+ 
+export const Stats = () => {
+    // Get the data from SSG, and render it as a component.
+    const { content } = useSSG()
+    return <pre>{decodeURIComponent(escape(atob(content)))}</pre>
+}
+
+The fastest TypeScript type checker written in Rust.
+
+## Status
+
+`stc` is under active development.
+To provide an estimate of the progress, we have a stats.
+
+
+<Stats />
 
  - `required_error` means a true negative, which is a type error that is not reported by `stc`.
 
