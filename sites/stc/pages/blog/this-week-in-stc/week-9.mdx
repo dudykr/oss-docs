@@ -1,0 +1,52 @@
+---
+title: 'This week in stc, 9'
+date: 2023/1/15
+description: 'The status update for stc'
+author: kdy1
+---
+
+This is the status update for [stc][], the new TypeScript type checker written in Rust.
+
+## TL;DR;
+
+Stats:
+
+```
+Stats {
+    required_error: 4237 => 4291,
+    matched_error: 5647 => 5814,
+    extra_error: 735 => 1118,
+    panic: 71 => 29,
+}
+```
+
+This is the diff for [the commit used for previous status update](https://github.com/dudykr/stc/blob/b021e8958481fedb12c648f070963b59ccb28128/crates/stc_ts_type_checker/tests/tsc-stats.rust-debug) and [the last commit on 1/15](https://github.com/dudykr/stc/blob/fcf2e3c58eca78aa46fdbe4c16435225b9a2a663/crates/stc_ts_type_checker/tests/tsc-stats.rust-debug).
+We changed the way we count the number of errors to make it represent the actual progress more closely.
+
+## Contributions
+
+![Contributors](/images/this-week-in-stc/9/contributors.png)
+
+There were lots of Contributions this week.
+Thank you!
+
+## Noticable changes
+
+### Change the way we count errors ([#487](https://github.com/dudykr/stc/pull/487))
+
+There are matrix tests in the test suite of `tsc`.
+Those tests have one input, but have multiple results, depending on the directives like `@target: es5, es2015, esnext`.
+Previously, we counted them as one test.
+But we now count the matrix tests, which has multiple result, once per the result.
+That's the main reason why the number of `extra_error` increased.
+
+
+### Remove panic ([#468](https://github.com/dudykr/stc/pull/468), [#493](https://github.com/dudykr/stc/pull/493))
+
+We replaced `panic!` calls with `Unimplemented` errors to make the stats more accurate.
+
+
+
+---
+
+[stc]: https://github.com/dudykr/stc
