@@ -10,12 +10,17 @@
 
 This is the primary goal, and once this is ready, the alpha will be released.
 
+For this, 
+
+ - the inference of types should be correct
+ - there should be no false-positive errors
+ - typings should be loaded correctly
 
 ### Only `isolatedModules: true`
 
 Ref: https://www.typescriptlang.org/tsconfig#isolatedModules
 
-This is required for proper parallelization. `const enums` are fine if they are imported using module syntax, but TypeScript **namespace cannot be analyzed in parallel**.
+This is required for proper parallelization. `const enums` are fine if they are imported using module syntax, but **TypeScript namespaces cannot be analyzed in parallel**.
 
 ### (*) A compiler for typings
 
