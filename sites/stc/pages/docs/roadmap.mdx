@@ -1,0 +1,20 @@
+---
+title: "Roadmap to the alpha"
+---
+
+
+# Things to note
+
+ -  Only`isolatedModules: true` will be supported.
+
+Ref: https://www.typescriptlang.org/tsconfig#isolatedModules
+
+This is required for proper parallelization. `const enums` are fine if they are imported using ESM syntax, but TypeScript **namespace cannot be analyzed in parallel**.
+
+But there is a one problem in this approach - existing typing packages uses namespace.
+
+ - 
+
+
+
+ - 
