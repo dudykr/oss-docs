@@ -1,20 +1,21 @@
----
-title: "Roadmap to the alpha"
----
+# Roadmap to the alpha
 
 
-# Things to note
+## Plans
 
- -  Only`isolatedModules: true` will be supported.
+`*` in title means it's subject to change.
+
+### Only `isolatedModules: true`
 
 Ref: https://www.typescriptlang.org/tsconfig#isolatedModules
 
-This is required for proper parallelization. `const enums` are fine if they are imported using ESM syntax, but TypeScript **namespace cannot be analyzed in parallel**.
+This is required for proper parallelization. `const enums` are fine if they are imported using module syntax, but TypeScript **namespace cannot be analyzed in parallel**.
 
-But there is a one problem in this approach - existing typing packages uses namespace.
+### (*) A compiler for typings
 
- - 
+ - This is subject to change.
 
-
-
- - 
+Many typing packages, including `@types/node`, cannot be analyzed in parallel because they use `namespace` and globals.
+So we can use only one thread for each typing package.
+But actually, this operation is easily cachable, and I expect the effect of caching to be significant.
+So I think it's worth it to provide a pre-compile API for typing packages.
