@@ -55,6 +55,7 @@ export const getStats = async (ghToken, owner, repo, filename) => {
 export const getChartableStats = async (ghToken, owner, repo, filename) => {
   const options = {
     responsive: true,
+    maintainAspectRatio: false,
     spanGaps: true,
     showLine: true,
     scales: {
@@ -165,7 +166,7 @@ export const Stats = () => {
     // Get the data from SSG, and render it as a component.
     const { content } = useSSG()
     const { options, data } = JSON.parse(decodeURIComponent(escape(atob(content))))
-    return <Line data={data} width={100} height={40} options={options}/>
+    return <Line style={{ maxHeight: 330 }} data={data} width={100} options={options}/>
 }
 
 The fastest TypeScript type checker written in Rust.
