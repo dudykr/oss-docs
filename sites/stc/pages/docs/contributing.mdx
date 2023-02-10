@@ -23,9 +23,15 @@ This script is fast, so you can run it frequently.
 
 **Note**: This command does not enable logging because it's too verbose.
 
+---
+
 - `./scripts/base.sh`
 
+---
+
 - `./scripts/auto-unignore.sh`
+
+**Note**: This command does not enable logging because it's too verbose.
 
 #### tests/base.rs
 
@@ -55,6 +61,10 @@ Any TypeScript file in this directory will be evaluated, and the type of express
 
 You can invoke this script to run all conformance tests, and update stats.
 
+**Note**: This command invokes base tests described above, and aborts if it fails.
+
+---
+
 - `./scripts/test.sh`
 
 You can invoke single conformance test case by using `./scripts/test.sh` from `./crates/stc_ts_type_checker`.
@@ -64,6 +74,8 @@ You can invoke single conformance test case by using `./scripts/test.sh` from `.
 ```
 
 will run conformance tests which have `staticIndexSignature` in their test name.
+
+**Note**: This command invokes base tests described above, and aborts if it fails.
 
 #### tests/tsc.rs
 
