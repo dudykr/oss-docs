@@ -47,6 +47,11 @@ You can invoke single conformance test case by using `./scripts/test.sh` from `.
 
 will run conformance tests which have `staticIndexSignature` in their test name.
 
+#### tests/tsc.rs
+
+This test suite declares the test suite ported from the official TypeScript compiler, `tsc`.
+You are not expected to run this test via `cargo test` directly, and instead you should use `./scripts/test.sh` or `./scripts/check.sh`.
+
 ## Debugging tips
 
 ### Debugging with vscode Debugger
