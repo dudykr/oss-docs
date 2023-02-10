@@ -103,6 +103,8 @@ You are not expected to run this test via `cargo test` directly, and instead you
 
 ## Workflows
 
+Regardless of the workflow you choose, you should run `./scripts/check.sh` when you are done.
+
 ### Using unit test (in file analyzer)
 
 ### Using conformance test suite
@@ -115,6 +117,9 @@ Each error will contain lots of information required for debugging, with `contex
 
 If you want, you can copy the file to `./crates/stc_ts_file_analyzer/tests/...` and run `./scripts/fast.sh` from the file analyzer.
 It's recommended to reduce the test input as much as possible, because `stc` prints enormous amount of log messages in a debug build.
+
+Otherwise, you can use `./scripts/test.sh` from `./crates/stc_ts_type_checker` to run a single test case.
+As `./scripts/test.sh` prints log messags, debugging will be easier.
 
 ## Debugging tips
 
