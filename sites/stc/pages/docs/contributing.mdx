@@ -28,8 +28,11 @@ This script is fast, so you can run it frequently.
 #### tests/base.rs
 
 This test file declares 4 testing systems, `pass`, `pass-only`, `errors`, and `visualize`.
+You should prefer shell scripts in `scripts` directory over direct `cargo test` invokation.
 
 #### tests/pass-only
+
+Any TypeScript file in this directory will be evaluated, and the test systme will ensure that `stc` doesn't emit any error.
 
 #### tests/pass
 
