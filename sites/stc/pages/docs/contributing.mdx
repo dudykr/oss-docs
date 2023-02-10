@@ -50,8 +50,10 @@ This command can be used to select a task to work on, or verify that your change
 
 #### tests/base.rs
 
-This test file declares 4 testing systems, `pass`, `pass-only`, `errors`, and `visualize`.
+This test file declares 5 testing systems, `pass`, `pass-only`, `errors`, `tsc`, and `visualize`.
 You should prefer shell scripts in `scripts` directory over direct `cargo test` invokation.
+
+**Note**: This test suite has some issues with directive parsing.
 
 #### tests/pass-only
 
@@ -65,6 +67,8 @@ Any TypeScript file in this directory will be evaluated, the test systme will en
 
 Any TypeScript file in this directory will be evaluated, and the test systme will ensure that `stc` emit at least one error.
 In future, we will check the error message as well.
+
+#### tests/tsc
 
 #### tests/visualize
 
@@ -96,6 +100,20 @@ will run conformance tests which have `staticIndexSignature` in their test name.
 
 This test suite declares the test suite ported from the official TypeScript compiler, `tsc`.
 You are not expected to run this test via `cargo test` directly, and instead you should use `./scripts/test.sh` or `./scripts/check.sh`.
+
+## Workflows
+
+### Using unit test (in file analyzer)
+
+### Using conformance test suite
+
+First, you should find a erroneous test case.
+Typically, you can find one by running `./scripts/check.sh` from `./crates/stc_ts_type_checker`.
+It will print enormous amount of log.
+You should focus on false-positives.
+Each error will contain lots of information required for debugging, with `context:` prefix.
+
+If you want, you can copy the file to `./crates/stc_ts_file_analyzer/tests/...` and run `./scripts/fast.sh` from the file analyzer.
 
 ## Debugging tips
 
