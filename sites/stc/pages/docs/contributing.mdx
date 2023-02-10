@@ -27,7 +27,7 @@ Note that it will automatically exclude useless items from the stack trace.
 
 ### Matching over `Type`
 
-To avoid performance drop caused by cloning, stc uses `Type::Arc` to share memory.
+To avoid performance drop caused by cloning, `stc` uses `Type::Arc` to share memory.
 But there's a downside for this - you have to call `normalize()` while matching.
 
 e.g.
