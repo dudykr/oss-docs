@@ -10,6 +10,10 @@
 brew install michaeleisel/zld/zld
 ```
 
+## Testing system
+
+If the filename of a test case file described below starts with `.`, it means it's ignored.
+
 ## Project structure
 
 ### crates/stc_ts_file_analyzer
@@ -30,6 +34,8 @@ This script is fast, so you can run it frequently.
 ---
 
 - `./scripts/auto-unignore.sh`
+
+This command can be used to select a task to work on, or verify that your change make more `pass-only`/`errors` tests pass.
 
 **Note**: This command does not enable logging because it's too verbose.
 
