@@ -107,6 +107,34 @@ Regardless of the workflow you choose, you should run `./scripts/check.sh` when 
 
 ### Using unit test (in file analyzer)
 
+You can run
+
+```bash
+./scripts/auto-unignore.sh
+```
+
+to get list of tasks to work on.
+Select one test input file from the terminal, and reanme it to not have `.` as prefix in their filename.
+
+e.g.
+
+- `.foo/1.ts` => `foo/1.ts`
+- `foo/.1.ts` => `foo/1.ts`
+
+Then, you can run
+
+```bash
+./scripts/fast.sh
+```
+
+to run the tests in a timely manner, or
+
+```bash
+./scripts/base.sh $test_name
+```
+
+to get log messages.
+
 ### Using conformance test suite
 
 First, you should find a erroneous test case.
