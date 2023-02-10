@@ -38,13 +38,22 @@ Any TypeScript file in this directory will be evaluated, and the test systme wil
 
 #### tests/pass
 
+Any TypeScript file in this directory will be evaluated, the test systme will ensure that `stc` doesn't emit any error, and the type of expressions are printed to a `.swc-stderr` file.
+
 #### tests/errors
 
+Any TypeScript file in this directory will be evaluated, and the test systme will ensure that `stc` emit at least one error.
+In future, we will check the error message as well.
+
 #### tests/visualize
+
+Any TypeScript file in this directory will be evaluated, and the type of expressions are printed to a `.swc-stderr` file.
 
 ### crates/stc_ts_type_checker
 
 - `./scripts/check.sh`
+
+You can invoke this script to run all conformance tests, and update stats.
 
 - `./scripts/test.sh`
 
