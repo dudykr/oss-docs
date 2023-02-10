@@ -31,6 +31,15 @@ This script is fast, so you can run it frequently.
 
 - `./scripts/base.sh`
 
+If no argument is specified, this runs all `base` tests declared in the file analyzer crate.
+This command is slow, so it's recommended to use it like
+
+```bash
+./scripts/base.sh pass_only_tests__pass_only__conformance__types__tuple__variadicTuples1__3_ts
+```
+
+You can get the test name by invoking `./scripts/fast.sh`, `./scripts/test.sh` (from stc_ts_type_checker), or `./scripts/check.sh` (from stc_ts_type_checker).
+
 ---
 
 - `./scripts/auto-unignore.sh`
