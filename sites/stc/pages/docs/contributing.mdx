@@ -149,6 +149,10 @@ It's recommended to reduce the test input as much as possible, because `stc` pri
 Otherwise, you can use `./scripts/test.sh` from `./crates/stc_ts_type_checker` to run a single test case.
 As `./scripts/test.sh` prints log messags, debugging will be easier.
 
+### Finding test cases with specific excessive errors
+
+You can run `./scripts/errors/find-extra.sh TS2322` from `./crates/stc_ts_type_checker` to find all false-positive `TS2322` errors.
+
 ## Debugging tips
 
 ### Rustdoc
