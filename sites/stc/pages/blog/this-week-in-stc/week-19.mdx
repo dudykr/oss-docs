@@ -1,0 +1,37 @@
+---
+title: "This week in stc, 19"
+date: 2023/3/26
+description: "The status update for stc"
+author: kdy1
+---
+
+This is the status update for [stc](https://github.com/dudykr/stc), the new TypeScript type checker written in Rust.
+
+## TL;DR;
+
+Stats:
+
+```
+Stats {
+    Matched: 6248 => 6295,
+    Bad (required): 3753 => 3739,
+    Bad (excess): 703 => 820,
+    Bad (panic): 105 => 107,
+}
+```
+
+This is the diff for [the commit used for previous status update](https://github.com/dudykr/stc/blob/6e52c07298905c8507729b7500d6262c28ef6004/crates/stc_ts_type_checker/tests/tsc-stats.rust-debug) and [the last commit on 3/26](https://github.com/dudykr/stc/blob/0cdf38b9358728c3ac592baf2bbedc31c507be6f/crates/stc_ts_type_checker/tests/tsc-stats.rust-debug).
+
+Stats regressed because we updated SWC and now the tests for auto-accoessors are marked as extra errors (`Unimplemented`).
+
+## Noticable changes
+
+### SWC update ([#846](https://github.com/dudykr/stc/pull/846))
+
+The previous version of SWC did not support auto-accoessors, but we updated SWC to the latest at the time of authoring PR and now it's parsed.
+
+## Contributions
+
+![Contributors](/images/this-week-in-stc/19/contributors.png)
+
+Thank you all!

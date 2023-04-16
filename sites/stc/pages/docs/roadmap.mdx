@@ -1,0 +1,40 @@
+# Roadmap to the alpha
+
+`(*)` in title means it's subject to change.
+
+
+## Goals regarding `tsc`
+
+As there's no specification of TypeScript, the stc team will treat `tsc` as the specification.
+It means if the behavior of `tsc` and `stc` is different, `stc` will be fixed to match `tsc`, unless explicitly stated in this document.
+
+## Plans
+
+### A new language server    
+
+This is the primary goal, and once this is ready, the alpha will be released.
+
+For this, 
+
+ - the inference of types should be correct
+ - there should be no false-positive errors
+ - typings should be loaded correctly
+
+### Only `isolatedModules: true`
+
+Ref: https://www.typescriptlang.org/tsconfig#isolatedModules
+
+This is required for proper parallelization. `const enums` are fine if they are imported using module syntax, but **TypeScript namespaces cannot be analyzed in parallel**.
+
+### Better error message
+
+### Better language server
+
+### (*) A compiler for typings
+
+ - This is subject to change.
+
+Many typing packages, including `@types/node`, cannot be analyzed in parallel because they use `namespace` and globals.
+So we can use only one thread for each typing package.
+But actually, this operation is easily cachable, and I expect the effect of caching to be significant.
+So I think it's worth it to provide a pre-compile API for typing packages.

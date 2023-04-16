@@ -1,0 +1,215 @@
+# Contributing
+
+## Configuring development environment
+
+1. Clone stc.
+2. Run `yarn` in the cloned directory.
+3. (mac only) Install `zld`
+
+```sh
+brew install michaeleisel/zld/zld
+```
+
+## Testing system
+
+If the filename of a test case file described below starts with `.`, it means it's ignored.
+
+## Project structure
+
+### crates/stc_ts_file_analyzer
+
+Frequently used scripts:
+
+- `./scripts/fast.sh`
+
+If no argument is specified, this runs all `base` tests declared in the file analyzer crate.
+This script is fast, so you can run it frequently.
+
+**Note**: This command does not enable logging because it's too verbose.
+
+---
+
+- `./scripts/base.sh`
+
+If no argument is specified, this runs all `base` tests declared in the file analyzer crate.
+This command is slow, so it's recommended to use it like
+
+```bash
+./scripts/base.sh pass_only_tests__pass_only__conformance__types__tuple__variadicTuples1__3_ts
+```
+
+You can get the test name by invoking `./scripts/fast.sh`, `./scripts/test.sh` (from stc_ts_type_checker), or `./scripts/check.sh` (from stc_ts_type_checker).
+
+---
+
+- `./scripts/auto-unignore.sh`
+
+This command can be used to select a task to work on, or verify that your change make more `pass-only`/`errors` tests pass.
+
+**Note**: This command does not enable logging because it's too verbose.
+
+#### tests/base.rs
+
+This test file declares 5 testing systems, `pass`, `pass-only`, `errors`, `tsc`, and `visualize`.
+You should prefer shell scripts in `scripts` directory over direct `cargo test` invokation.
+
+#### tests/pass-only
+
+Any TypeScript file in this directory will be evaluated, and the test systme will ensure that `stc` doesn't emit any error.
+
+#### tests/pass
+
+Any TypeScript file in this directory will be evaluated, the test systme will ensure that `stc` doesn't emit any error, and the type of expressions are printed to a `.swc-stderr` file.
+
+#### tests/errors
+
+Any TypeScript file in this directory will be evaluated, and the test systme will ensure that `stc` emit at least one error.
+In future, we will check the error message as well.
+
+#### tests/tsc
+
+Any TypeScript file in this directory will be evaluated, and the result will be compared with the official TypeScript compiler.
+
+#### tests/visualize
+
+Any TypeScript file in this directory will be evaluated, and the type of expressions are printed to a `.swc-stderr` file.
+
+### crates/stc_ts_type_checker
+
+- `./scripts/check.sh`
+
+You can invoke this script to run all conformance tests, and update stats.
+
+**Note**: This command invokes base tests described above, and aborts if it fails.
+
+---
+
+- `./scripts/test.sh`
+
+You can invoke single conformance test case by using `./scripts/test.sh` from `./crates/stc_ts_type_checker`.
+
+```bash
+./scripts/test.sh staticIndexSignature
+```
+
+will run conformance tests which have `staticIndexSignature` in their test name.
+
+**Note**: This command invokes base tests described above, and aborts if it fails.
+
+#### tests/tsc.rs
+
+This test suite declares the test suite ported from the official TypeScript compiler, `tsc`.
+You are not expected to run this test via `cargo test` directly, and instead you should use `./scripts/test.sh` or `./scripts/check.sh`.
+
+## Workflows
+
+Regardless of the workflow you choose, you should run `./scripts/check.sh` when you are done.
+
+### Using unit test (in file analyzer)
+
+You can run
+
+```bash
+./scripts/auto-unignore.sh
+```
+
+to get list of tasks to work on.
+Select one test input file from the terminal, and reanme it to not have `.` as prefix in their filename.
+
+e.g.
+
+- `.foo/1.ts` => `foo/1.ts`
+- `foo/.1.ts` => `foo/1.ts`
+
+Then, you can run
+
+```bash
+./scripts/fast.sh
+```
+
+to run the tests in a timely manner, or
+
+```bash
+./scripts/base.sh $test_name
+```
+
+to get log messages.
+
+### Using conformance test suite
+
+First, you should find a erroneous test case.
+Typically, you can find one by running `./scripts/check.sh` from `./crates/stc_ts_type_checker`.
+It will print enormous amount of log.
+You should focus on false-positives.
+Each error will contain lots of information required for debugging, with `context:` prefix.
+
+If you want, you can copy the file to `./crates/stc_ts_file_analyzer/tests/...` and run `./scripts/fast.sh` from the file analyzer.
+It's recommended to reduce the test input as much as possible, because `stc` prints enormous amount of log messages in a debug build.
+
+Otherwise, you can use `./scripts/test.sh` from `./crates/stc_ts_type_checker` to run a single test case.
+As `./scripts/test.sh` prints log messags, debugging will be easier.
+
+### Finding test cases with specific excessive errors
+
+You can run `./scripts/errors/find-extra.sh TS2322` from `./crates/stc_ts_type_checker` to find all false-positive `TS2322` errors.
+
+## Debugging tips
+
+### Rustdoc
+
+You can look at [the rustdoc for `Analyzer`](https://rustdoc.stc.dudy.dev/stc_ts_file_analyzer/analyzer/struct.Analyzer.html) to get list of implemented operations.
+
+### Debugging with vscode Debugger
+
+Please copy `.vscode/launch.template.json` and rename it to `.vscode/launch.json`.
+
+In `launch.json`, you can pass the path of the `.ts` file you want to check to the `args` field.
+Then, you can run the type checker with debugger from the debugger panel.
+
+### `print_backtrace()`
+
+If you think some code should not be invoked but seems like it's invoked, you can use `print_backtrace()`.
+It will print the stack trace of the current thread.
+Note that it will automatically exclude useless items from the stack trace.
+
+### Matching over `Type`
+
+To avoid performance drop caused by cloning, `stc` uses `Type::Arc` to share memory.
+But there's a downside for this - you have to call `normalize()` while matching.
+
+e.g.
+
+```rust
+match ty.normalize() {
+}
+```
+
+Note that this is different from `self.normalize(ty)` of `Analyzer`, which is used to expand special types like references, queries, mapped, etc..
+
+### Finding problematic code
+
+Look at the `context:` in the error output, and search it from repository using substring of the context.
+e.g. `tried to assign to a template type` means the error comes from [analyzer/assign/mod.rs#L2208](https://github.com/dudykr/stc/blob/1c73ce5fa87ec789ead108c5c6876e8089b1e5de/crates/stc_ts_file_analyzer/src/analyzer/assign/mod.rs#L2208)
+
+## Troubleshooting
+
+### Windows - `unstable on this platform`
+
+In case if you're using Windows and getting an error
+
+```sh
+error: `-Csplit-debuginfo=unpacked` is unstable on this platform
+```
+
+as a workaround you can try using [WSL](https://learn.microsoft.com/en-us/windows/wsl/).
+
+### `failed to execute command`
+
+If you're getting something like
+
+```sh
+--- stderr
+  thread 'main' panicked at 'failed to execute command: No such file or directory (os error 2)', /home/ubuntu/.cargo/registry/src/github.com-1ecc6299db9ec823/tikv-jemalloc-sys-0.5.2+5.3.0-patched/build.rs:326:19
+```
+
+try running `apt-get install make`. ([related issue](https://github.com/gnzlbg/jemallocator/issues/148#issuecomment-619373613))

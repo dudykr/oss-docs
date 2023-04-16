@@ -2,26 +2,187 @@
 title: "STC: Speedy type checker"
 ---
 
-The faster TypeScript type checker written in Rust.
+import { useSSG } from 'nextra/ssg'
+import { Chart as ChartJS, Colors, LinearScale, TimeScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js'
+import 'chartjs-adapter-date-fns'
+import { Line } from 'react-chartjs-2'
 
-
-## Reading stats in status updates
-
-You will see `Stats` in status updates, like
-
-```rust
-{
-    required_error: 4463,
-    matched_error: 5421,
-    extra_error: 999,
-    panic: 89,
+export const normalizeJson = (string) => {
+    // REFER: see https://stackoverflow.com/a/60708762
+    return string.replace(/[\s\n\r\t]/gs, '').replace(/,([}\]])/gs, '$1')
+      .replace(/([,{\[]|)(?:("|'|)([\w_\- ]+)\2:|)("|'|)(.*?)\4([,}\]])/gs, (str, start, q1, index, q2, item, end) => {
+        item = item.replace(/"/gsi, '').trim()
+        if (index) { index = '"'+index.replace(/"/gsi, '').trim() + '"' }
+        if (!item.match(/^[0-9]+(\.[0-9]+|)$/) && !['true','false'].includes(item)) { item = '"' + item + '"' }
+        if (index) { return start + index + ':' + item + end }
+        return start + item + end
+    })
 }
-```
 
- - `required_error` means a true negative, which is a type error that is not reported by `stc`.
+export const getCommits = async (ghToken, owner, repo, filename) => {
+  if (!ghToken || !ghToken.length) {
+    throw new Error('Github API token missing! Please configure it with the environment variable GITHUB_TOKEN')
+  }
+  let commitsPromises = Array(5).fill(null).map(async (_, i) => {
+    const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/commits?path=${filename}&since=2022-11-11T00:00:00Z&per_page=20&page=${i + 1}`, {
+      headers: {
+        'Authorization': `token ${ghToken}`,
+      },
+    })
+    return await response.json()
+  })
 
- - `matched_error` means a true positive, which is a type error that is reported by `stc` and correct.
+  const json = (await Promise.all(commitsPromises)).reduce((acc, curr) => acc.concat(curr))
+  return json
+}
 
- - `extra_error` means a false positive. In other words, it's the number of incorrect errors `stc` emits while it should not.
+export const getStats = async (ghToken, owner, repo, filename) => {
+  const commits = await getCommits(ghToken, owner, repo, filename)
+  const versionFetchers = commits.map(commit => fetch(`https://raw.githubusercontent.com/${owner}/${repo}/${commit.sha}/${filename}`))
+  const allVersions = await Promise.all(versionFetchers)
+  const rawStats = await Promise.all(allVersions.map(r => r.text()))
+  const stats = rawStats.map((statText, index) => {
+    const stringifiedJson = statText.replace('Stats ', '')
+    const stat = JSON.parse(normalizeJson(stringifiedJson))
+    return {
+      ...stat,
+      date: commits[index].commit.author.date,
+    }
+  })
+  return stats
+}
 
- - `panic` means the analyzer panicked while validating input files, due to a logic bug.
+export const getChartableStats = async (ghToken, owner, repo, filename) => {
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+    spanGaps: true,
+    showLine: true,
+    scales: {
+      x: {
+        type: 'time',
+        time: {
+          unit: 'week',
+        },
+      },
+    },
+    plugins: {
+      legend: {
+        position: 'top'
+      },
+      title: {
+        display: false,
+        text: 'STC Development Progress'
+      },
+    }
+  }
+
+  const stats = await getStats(ghToken, owner, repo, filename)
+
+  const data = {
+    datasets: [
+      {
+        label: 'Required',
+        data: stats.map((s) => {
+          return {
+            x: s.date,
+            y: s.required_error,
+          }
+        }),
+        borderColor: '#57A0E5',
+        backgroundColor: '#57A0E5',
+      },
+      {
+        label: 'Matched',
+        data: stats.map((s) => {
+          return {
+            x: s.date,
+            y: s.matched_error,
+          }
+        }),
+        borderColor: '#9268F6',
+        backgroundColor: '#9268F6',
+      },
+      {
+        label: 'Extra',
+        data: stats.map((s) => {
+          return {
+            x: s.date,
+            y: s.extra_error,
+          }
+        }),
+        borderColor: '#6DBEBF',
+        backgroundColor: '#6DBEBF',
+      },
+      {
+        label: 'Panic',
+        data: stats.map((s) => {
+          return {
+            x: s.date,
+            y: s.panic,
+          }
+        }),
+        borderColor: '#ED6D85',
+        backgroundColor: '#ED6D85',
+      },
+    ]
+  }
+
+  return {
+    options,
+    data,
+  }
+}
+
+export const getStaticProps = async ({ params }) => {
+    const ghToken = process.env.GITHUB_TOKEN
+    const owner = 'dudykr'
+    const repo = 'stc'
+    const filename = 'crates/stc_ts_type_checker/tests/tsc-stats.rust-debug'
+    const data = await getChartableStats(ghToken, owner, repo, filename)
+    return {
+      props: {
+        // We add an `ssg` field to the page props,
+        // which will be provided to the Nextra `useSSG` hook.
+        ssg: {
+          content: btoa(JSON.stringify(data)),
+        },
+      },
+      // The page will be considered as stale and regenerated every 1 hour.
+      revalidate: 60 * 60,
+    }
+}
+
+export const Stats = () => {
+    ChartJS.register(
+      LinearScale,
+      TimeScale,
+      PointElement,
+      LineElement,
+      Title,
+      Tooltip,
+      Legend
+  )
+    // Get the data from SSG, and render it as a component.
+    const { content } = useSSG()
+    const { options, data } = JSON.parse(decodeURIComponent(escape(atob(content))))
+    return <Line style={{ maxHeight: 330 }} data={data} width={100} options={options}/>
+}
+
+The fastest TypeScript type checker written in Rust.
+
+## Status
+
+`stc` is under active development.
+To provide an estimate of the progress, we provide historical statistics.
+
+
+<Stats />
+
+ - <strong>Required</strong> means a true negative, which is a type error that is not reported by `stc`.
+
+ - <strong>Matched</strong> means a true positive, which is a type error that is reported by `stc` and correct.
+
+ - <strong>Extra</strong> means a false positive. In other words, it's the number of incorrect errors `stc` emits while it should not.
+
+ - <strong>Panic</strong> means the analyzer panicked while validating input files, due to a logic bug.
