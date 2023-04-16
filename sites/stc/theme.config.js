@@ -69,7 +69,7 @@ const Head = () => {
 /** @type import('nextra-theme-docs').DocsThemeConfig */
 export default {
   project: {
-    link: "https://github.com/dudykr/oss-docs",
+    link: "https://github.com/dudykr/stc",
   },
   editLink: {
     text: "Edit this page on GitHub",
