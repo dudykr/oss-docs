@@ -1,0 +1,36 @@
+---
+title: "This week in stc, 23"
+date: 2023/4/16
+description: "The status update for stc"
+author: kdy1
+---
+
+This is the status update for [stc](https://github.com/dudykr/stc), the new TypeScript type checker written in Rust.
+
+## TL;DR;
+
+```
+Stats {
+    Matched: 6356 => 6377,
+    Bad (required): 3678 => 3658,
+    Bad (excess): 766,
+    Bad (panic): 74,
+}
+```
+
+This is the diff for [the commit used for previous status update](https://github.com/dudykr/stc/blob/dce9791936c6488a187fc988d51361b327fe189d/crates/stc_ts_type_checker/tests/tsc-stats.rust-debug) and [the last commit on 4/23](https://github.com/dudykr/stc/blob/18624b68e031b617b1e697705b1059273a6e7d8a/crates/stc_ts_type_checker/tests/tsc-stats.rust-debug).
+The stats regressed because we updated our test suite to match the latest version of TypeScript.
+
+# Noticable changes
+
+## Language server
+
+![Screenshot](/images/this-week-in-stc/23/lsp.png)
+
+We are working on a language server for stc. It is still in early stage, and the main goal is to help us to debug the type checker.
+
+## Contributions
+
+![Contributors](/images/this-week-in-stc/23/contributors.png)
+
+Thank you!
